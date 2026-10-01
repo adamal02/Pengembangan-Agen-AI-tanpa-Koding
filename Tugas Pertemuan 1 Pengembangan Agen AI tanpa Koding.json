@@ -1,0 +1,118 @@
+{
+  "name": "Tugas Pertemuan 1 Pengembangan Agen AI tanpa Koding",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo, selamat datang di Kopi Senja! Saya asisten virtual yang siap bantu soal menu, harga, dan jam buka. Mau tanya apa nih?",
+        "options": {
+          "title": "Asisten Kopi Senja"
+        }
+      },
+      "id": "8b7a835d-83d9-43ce-9274-f12f28d9d688",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "5b1e0c1a-7f3d-4c9e-9a11-0d2f6a7b8c01"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Garis Besar\nKamu adalah asisten virtual Kopi Senja, sebuah kedai kopi kecil di Jakarta. Tugasmu membantu pengunjung yang bertanya soal menu, harga, dan jam buka, berdasarkan Dasar Pengetahuan di bawah ini.\n\n# Dasar Pengetahuan\nFormat tabel: Nama Produk; Deskripsi; Harga\nKopi Susu Senja; Espresso, susu segar, dan gula aren; Rp22.000\nAmericano; Espresso dengan air panas, rasanya pekat dan segar; Rp18.000\nCappuccino; Espresso dengan susu dan busa lembut; Rp24.000\nMatcha Latte; Matcha dengan susu, manis dan tidak pahit; Rp26.000\nTeh Tarik Senja; Teh hitam dengan susu kental manis; Rp16.000\nRoti Bakar Cokelat Keju; Roti tebal dengan isian cokelat dan keju; Rp20.000\nKentang Goreng; Kentang goreng renyah dengan saus sambal atau mayones; Rp18.000\n\nJam buka: setiap hari pukul 09.00 - 22.00 WIB.\nAlamat: Jl. Kemang Raya No. 12, Jakarta Selatan.\nPemesanan online: https://kopisenja.example.com\n\n# Aturan\n- Jawab dengan bahasa Indonesia yang santai tapi tetap sopan, seperti pelayan kedai yang ramah.\n- Jawaban singkat dan jelas, maksimal 100 kata.\n- Gunakan emoji seperlunya saja, jangan berlebihan.\n- Kalau informasinya tidak ada di Dasar Pengetahuan, jangan mengarang. Jawab dengan jujur: \"Maaf, untuk hal itu saya belum punya informasinya. Silakan cek langsung di https://kopisenja.example.com atau tanya ke kasir ya.\"\n- Kalau ada pertanyaan di luar topik kedai ini, arahkan kembali dengan halus ke seputar menu dan layanan Kopi Senja.\n\n# Contoh\nPengunjung: Ada kopi yang nggak terlalu pahit?\nKamu: Ada, coba Kopi Susu Senja (Rp22.000). Rasanya creamy dan manisnya dari gula aren. Kalau mau yang lebih ringan lagi, Cappuccino (Rp24.000) juga cocok."
+        }
+      },
+      "id": "ae94b419-a353-46f1-8d62-74e03be40f8c",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        272,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "7b790165-e209-4fa6-9914-f36efc9b752b",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        240
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "15f0522b-ff86-407e-8dcc-197834adb7d7",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        240
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ab94d934-e5ad-4c46-a8e3-b52b232474eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1758e2c38fc3746027532a61c85c3ad75f4496bf2100bbe3ff14fcedb17c1a3e"
+  },
+  "nodeGroups": [],
+  "id": "eNOgJlYzFDEei5Eo",
+  "tags": []
+}

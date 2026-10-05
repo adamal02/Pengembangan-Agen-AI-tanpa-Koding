@@ -1,0 +1,162 @@
+{
+  "name": "Tugas Pertemuan 3 Pengembangan Agen AI tanpa Koding",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Garis Besar\nKamu adalah asisten virtual Kopi Senja, sebuah kedai kopi kecil di Jakarta. Tugasmu membantu pengunjung yang bertanya soal menu dan harga.\n\n# Tools\nGet row(s) in sheet in Google Sheets: dipakai untuk mengambil data menu dari Google Sheets (nama produk, deskripsi, dan harga).\n\n# Informasi Tambahan\nJam buka: setiap hari pukul 09.00 - 22.00 WIB.\nAlamat: Jl. Kemang Raya No. 12, Jakarta Selatan.\n\n# Aturan\n- Setiap ada pertanyaan soal menu, produk, atau harga, selalu pakai tool \"Get row(s) in sheet in Google Sheets\" dulu, jangan menjawab dari ingatan.\n- Tulis harga dengan format rupiah, contoh: Rp22.000.\n- Jawab santai tapi sopan, singkat, maksimal 100 kata. Emoji seperlunya saja.\n- Kalau produk yang ditanya tidak ada di data, jangan mengarang. Jawab jujur: \"Maaf, menu itu belum ada di daftar kami. Mau coba menu lainnya?\"\n- Kalau ada pertanyaan di luar topik kedai ini, arahkan kembali dengan halus ke seputar menu dan harga Kopi Senja."
+        }
+      },
+      "id": "6cdee279-88e6-4f5f-949d-0dbee5c5eca7",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        272,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c226838a-e086-4e5e-9abd-8781af32e509",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        240
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "fa9d6f52-044e-49ac-9cd6-6cb429065c52",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo, selamat datang di Kopi Senja! Saya asisten virtual yang siap bantu soal menu, harga, dan jam buka. Mau tanya apa nih?",
+        "options": {
+          "title": "Asisten Kopi Senja"
+        }
+      },
+      "id": "6f2d7226-a7a0-429c-8ac4-58328c5a88d7",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "4b853b56-a1cc-451a-a7ed-6d6ca258b344"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1L5y-oze9w90-mJAfPzs1x1jFKdxkGrADkjDqPx16uWs",
+          "mode": "list",
+          "cachedResultName": "Tabel Tugas Pertemuan 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L5y-oze9w90-mJAfPzs1x1jFKdxkGrADkjDqPx16uWs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L5y-oze9w90-mJAfPzs1x1jFKdxkGrADkjDqPx16uWs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        240
+      ],
+      "id": "0e21599a-e326-4b07-82f8-da66b94a6c4b",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cvQuL5vP9U7HeEOe",
+          "name": "Google Sheets untuk Tugas 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c9f1e19d-2040-4c6f-96e8-cda08cbad61f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1758e2c38fc3746027532a61c85c3ad75f4496bf2100bbe3ff14fcedb17c1a3e"
+  },
+  "nodeGroups": [],
+  "id": "SAxPqRJXNsM2ocb0",
+  "tags": []
+}

@@ -1,0 +1,184 @@
+{
+  "name": "RAG Agent Kopi Senja",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo, selamat datang di Kopi Senja! Saya asisten virtual yang siap bantu soal menu, harga, dan jam buka. Mau tanya apa nih?",
+        "options": {
+          "title": "Asisten Kopi Senja"
+        }
+      },
+      "id": "53ff02b7-31a7-48c0-88fa-ebf0ab5971b6",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "188ddba8-2c74-4335-9375-e2fe6e156069"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Garis Besar\nKamu adalah asisten virtual Kopi Senja, sebuah kedai kopi kecil di Kemang, Jakarta Selatan. Tugasmu membantu pengunjung yang bertanya soal menu, harga, jam buka, lokasi, dan layanan kedai.\n\n# Tool\nSupabase Vector Store: dipakai untuk mencari informasi tentang Kopi Senja yang tersimpan di database.\n\n# Aturan\n- Setiap ada pertanyaan soal Kopi Senja, selalu pakai tool Supabase Vector Store dulu sebelum menjawab. Jangan menjawab dari ingatan.\n- Kalau informasinya tidak ada di database, jangan mengarang. Jawab dengan jujur: \"Maaf, saya belum bisa menjawab itu karena tidak ada di informasi yang saya punya. Coba cek langsung ke kasir atau lewat https://kopisenja.example.com ya.\"\n- Tulis harga dengan format rupiah, contoh: Rp22.000.\n- Jawab santai tapi sopan, singkat, maksimal 100 kata. Emoji seperlunya saja.\n- Kalau ada pertanyaan di luar topik kedai ini, arahkan kembali dengan halus ke seputar Kopi Senja."
+        }
+      },
+      "id": "e2c05e70-fde8-4fee-973f-ea740a007311",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        272,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3fb4fc10-4265-4a26-a18d-0ce6cdb09a52",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        272
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "e3075780-d1ed-406a-a5b2-166fd4b3fb04",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Panggil tool ini untuk mencari informasi tentang Kopi Senja, seperti menu, harga, jam buka, lokasi, cara pesan, pembayaran, dan fasilitas kedai.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "id": "7c071561-0ce7-4896-963d-1680409e9dcf",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        272
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0pH951ehvTaaeQRe",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "c70ba687-a33d-4edf-8c98-724396cff04e",
+      "name": "Embeddings Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        464
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mPJQBBbVZG0ZV1wH",
+          "name": "Google Gemini(PaLM) Api account-Adam"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6116c466-8343-4e76-89bf-233fb02a65e2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1758e2c38fc3746027532a61c85c3ad75f4496bf2100bbe3ff14fcedb17c1a3e"
+  },
+  "nodeGroups": [],
+  "id": "yZLxzVkUVgf4kvuz",
+  "tags": []
+}
